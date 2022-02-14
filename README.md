@@ -1,3 +1,7 @@
+CAM: Captis a Momentum -- Capture a moment
+
+An app to visual record and capture the daily on goings of you busy people
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
