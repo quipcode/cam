@@ -1,7 +1,7 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import DonutChartWidget from './DonutChart/DonutChartWidget';
+import DonutChartWidget from './DonutCharts/DonutChartWidget';
 function App() {
   return (
     <div className="App">
