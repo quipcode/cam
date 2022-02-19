@@ -2,6 +2,7 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import DonutChartWidget from './DonutCharts/DonutChartWidget';
+import  BasicDonut from './basicDonut/basic_donut'
 function App() {
   return (
     <div className="App">
@@ -20,7 +21,7 @@ function App() {
         </a>
       </header> */}
       <h1>Hi there buddy</h1>
-      <DonutChartWidget/>
+      <BasicDonut/>
     </div>
   );
 }
