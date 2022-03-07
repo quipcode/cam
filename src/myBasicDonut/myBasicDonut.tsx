@@ -1,6 +1,8 @@
 import React, { useEffect, useCallback, useState } from 'react'
 import * as d3 from 'd3'
 import { Types } from './types'
+import SidePiece from './sidePiece'
+import { renderToString } from 'react-dom/server'
 
 interface Data {
     userName?: string;
@@ -22,7 +24,7 @@ const MyBasicDonut = () => {
     let thisDay = now.getDate()
     let thisDayStart = new Date(thisYear, thisMonth, thisDay)
     let thisDayEnd = new Date(thisDayStart.getTime() + 86399999)
-    console.log("the start of day is: " + thisDayStart + `/n` + 'the end of day is: ' + `/n` + "the duration is: " + thisDayEnd.getTime().valueOf() + " " +  thisDayStart.getTime().valueOf()) 
+    // console.log("the start of day is: " + thisDayStart + `/n` + 'the end of day is: ' + `/n` + "the duration is: " + thisDayEnd.getTime().valueOf() + " " +  thisDayStart.getTime().valueOf()) 
     let rawData = [
         {
             "userName": "mustafa",
@@ -91,10 +93,6 @@ const MyBasicDonut = () => {
             if (a.startTime && b.startTime) {
                 return parseInt(a.startTime) - parseInt(b.startTime)
             }
-            // if(a.activityId && b.activityId){
-            //     console.log(parseInt(b.activityId) - parseInt(a.activityId))
-            //     return parseInt(a.activityId) - parseInt(b.activityId)
-            // }
         })
         return newArray
     }
@@ -110,68 +108,51 @@ const MyBasicDonut = () => {
         return newGap;
     }
 
-    let dummyTime = {
-        "userName": "mustafa",
-        "dayStart": "1645430400000",
-        "dayEnd": "1645516799999",
-        "activityId": "1",
-        "activityName": "hygiene",
-        "startTime": "1645448400000",
-        "endTime": "1645450200000",
-        
-    }
-
-    const makingGappedDays = (opts: Data[]) => {
+    // call api to get 'dayactivities'
+    //sort my data by time
+    // start at starttime and find nextActivity
+    //create gap from startTime to nextActivity
+    // if activity present don't create gap...instead update currenttime to activity end time
+    const makingGaps = (opts: Data[]) => {
         let sortedActivities = sortData(opts)
-        // let newArray = [...opts]
-        let gappedDay = [...sortedActivities]
-        let currentTime = gappedDay[0].dayStart, dayEnd = gappedDay[0].dayEnd
-        let activityIdx = 0, activityEndIdx = sortedActivities.length
-        let shellData  = {} as Data;
+        var dayStart = new Date();
+        dayStart.setUTCHours(0, 0, 0, 0);
 
-        // let shellData: Data = {
-        //     "userName": null,
-        //     "dayStart": null,
-        //     "dayEnd": null,
-        //     "activityId": null,
-        //     "activityName": null,
-        //     "startTime": null,
-        //     "endTime":  null
-        // }
-        if(opts[0]){
-            shellData.userName = opts[0].userName;
-            shellData.dayStart = opts[0].dayStart
-            shellData.dayEnd = opts[0].dayEnd;
-        }
-        
-        
-        // {...opts[0]}
-        // shellData.activityId =null
-        if(currentTime && dayEnd){
-            while (currentTime < dayEnd) {
-                let currentActivity = sortedActivities[activityIdx]
-                let gapEnd  = null
-                if(activityIdx + 1 < activityEndIdx){
-                    gapEnd = sortedActivities[activityIdx + 1].startTime
-                }else{
-                    gapEnd = currentActivity.dayEnd
-                }
-                let gapStart = currentActivity.endTime
-                shellData.startTime = gapStart
-                shellData.endTime = gapEnd
-                let newGap = createGap(shellData)
+        var dayEnd = new Date();
+        dayEnd.setUTCHours(23, 59, 59, 999);
+
+        let currentTime = parseInt(sortedActivities[0].dayStart!) ||  dayStart 
+        let endDayTime = parseInt(sortedActivities[0].dayEnd!) || dayEnd
+        let idx = 0, endIdx = sortedActivities.length
+        let gappedDay = []
+        while( idx < endIdx){
+            let currentActivity = sortedActivities[idx]
+            console.log(sortedActivities)
+            let activityStartTime = parseInt(currentActivity.startTime!) 
+            let activityEndTime = parseInt(currentActivity.endTime!)
+            if (activityStartTime == currentTime ){
                 gappedDay.push(currentActivity)
+                
+            }else{
+                let gappedDataDay = {} as Data
+                gappedDataDay.dayStart = dayStart.toString()
+                gappedDataDay.dayEnd = dayEnd.toString()
+                let gapStart = currentTime
+                let gapEnd = currentActivity.startTime
+                gappedDataDay.startTime = gapStart.toString()
+                gappedDataDay.endTime = gapEnd
+                let newGap = createGap(gappedDataDay)
                 gappedDay.push(newGap)
-                activityIdx += 1
-                currentTime = gapEnd!
+                gappedDay.push(currentActivity)
             }
-        }else{
-            return "You messed up"
+            currentTime = activityEndTime
+            idx += 1
         }
+
         return gappedDay
     }
 
-    let gappingDay = makingGappedDays(rawData)
+    let gappingDay = makingGaps(rawData)
     console.log("ungapped day")
     console.log(rawData)
     console.log("gapped day")
@@ -179,33 +160,12 @@ const MyBasicDonut = () => {
 
     const loadData = () => {
         d3.dsv(',', '/data/mybasicdonut.csv', (d) => {
-            console.log("hi")
-            console.log(d)
             return (d as unknown) as Types.Data[]
-
         }).then((d) => {
             setData((d as unknown) as Types.Data[])
             setGappedData((d as unknown) as Types.Data[])
         })
     }
-    // console.log(data)
-    // console.log("gapped data is below")
-    // console.log(gappedData)
-    // setGappedData(data)
-    // data.sort((n1, n2) => {
-    //     if (n1.age > n2.age) {
-    //         return 1;
-    //     }
-
-    //     if (n1.age < n2.age) {
-    //         return -1;
-    //     }
-
-    //     return 0;
-    // });
-    // setGappedData(if(data){
-    //     data.sort((a, b) => a.activityName - b.activityName)
-    // })
     
     useEffect(() => {
         if (data.length <= 1)
@@ -233,13 +193,12 @@ const MyBasicDonut = () => {
     // set the color scale
     const color = d3.scaleOrdinal()
         .domain(
-            (d3.extent(data, (d) => {
-                return d.activityName   
-                // return d.activityName
-            }) as unknown) as string
+            
+            (d3.extent(gappingDay, (d) => {
+                    return d.activityName
+                }) as unknown) as string
         )
         // .domain(["a", "b", "c", "d", "e", "f", "g", "h"])
-    
         // .range(d3.schemeDark2);
         .range(d3.schemeCategory10);
 
@@ -252,7 +211,7 @@ const MyBasicDonut = () => {
     //@ts-ignore
     // const data_ready = pie(Object.entries(data))
     // const pieData = pie(data)
-    const data_ready = pie(data)
+    const data_ready = pie(gappingDay)
 
     // The arc generator
     const arc = d3.arc()
@@ -320,101 +279,108 @@ const MyBasicDonut = () => {
             return (midangle < Math.PI ? 'start' : 'end')
         })
     
-    var divTip = d3.select("#my_dataviz").append("div")
-        .attr("class", "tooltip-donut")
-        .style("opacity", 0);
-    // divTip.html(d.duration)
-    //     .style("left", (d3.event.pageX + 10) + "px")
-    //     .style("top", (d3.event.pageY - 15) + "px");
-    // var parseDate = d3.time.format("%d-%b-%y").parse;
-    // var formatTime = d3.time.format("%e %B");
+    // svg.on("mouseover", function (event) { TimeEditor.text(event.target.__data__.data.activityName); return TimeEditor.style("visibility", "visible");  })
+    //     .on("mousemove", function (event) { return TimeEditor.style("top", (event.clientY - 10) + "px").style("left", (event.clientX + 10) + "px"); })
+    //     .on("mouseout", function () { return TimeEditor.style("visibility", "hidden"); });
 
-    // svg.on('mouseover', (d, i) => {
-    //     console.log(d);
-    // });
-    var tooltip = d3.select("body")
-        .append("div")
-        .style("position", "absolute")
-        .style("z-index", "10")
-        .style("visibility", "hidden")
-        .style("background", "#fff")
-        .text("a simple tooltip");
+    // var nickMaker = d3.select("#timeEditor")
+    //     .append("div")
+    //     .style("position", "absolute")
+    //     .style("z-index", "10")
+    //     .style("visibility", "hidden")
+    //     .style("background", "#000  ")
+    //     .text("a simple tooltip");
 
-    svg.on("mouseover", function (event) { tooltip.text(event.target.__data__.data.activityName); return tooltip.style("visibility", "visible");  })
-    .on("mousemove", function (event) { return tooltip.style("top", (event.clientY - 10) + "px").style("left", (event.clientX + 10) + "px"); })
-    .on("mouseout", function () { return tooltip.style("visibility", "hidden"); });
-
-    // svg.on("mouseover", function (d) {
-    //     divTip.transition()
-    //         .duration(200)
-    //         .style("opacity", .9);
-    //     // divTip.html("hello" + "<br/>" + d.close)
+    // svg.on("mouseover", function (event) { 
+    //     nickMaker.text(event.target.__data__.data.activityName); 
+    //     <SidePiece setVisible={true} />
+    //     return nickMaker.style("visibility", "visible"); 
         
-    //     //     .style("left", (d.clientX) + "px")
-            
-    //     //     .style("top", (d.clientY - 28) + "px");
     // })
-    // .on("mouseout", function (d) {
-    //     divTip.transition()
-    //         .duration(500)
-    //         .style("opacity", 0);
-    // });
-
-    // svg.on('mouseover', function (d, i) {
-    //     d3.select(this).transition()
-    //         .duration(50)
-    //         .attr('opacity', '.85');
-    //     divTip.transition()
-    //         .duration(50)
-    //         .style("opacity", 1);
-    //     let num = (Math.round((d.value / d.data.all) * 100)).toString() + '%';
-    //     divTip.html(num)
-    //         .style("left", (d.clientX + 10) + "px")
-    //         .style("top", (d.clientY - 15) + "px");
-    // }).on('mouseout', function (d, i) {
-    //     d3.select(this).transition()
-    //         .duration(50)
-    //         .attr('opacity', '1');
-    //     divTip.transition()
-    //         .duration(50)
-    //         .style("opacity", 0);
-    // });
-
-    // svg.on('mouseover', function (d, i) {
-    //         d3.select(this).transition()
-    //             .duration(50)
-    //             .attr('opacity', '.85'); 
-    //     divTip.transition()
-    //         .duration(50)
-    //         .style("opacity", 1);
-            
-    //         })    
-    // svg.on('mouseout', function (d, i) {
-    //                 d3.select(this).transition()
-    //                     .duration(50)
-    //                     .attr('opacity', '1');
-    //     divTip.transition()
-    //         .duration(50)
-    //         .style("opacity", 0);
-    //                 })
-
-    // svg.on("hover", function () {
-    //     console.log("the biggest thing ever")
-    //     // const m = d3.mouse(this);
-    //     // const date = x.invert(m[0]);
-    //     // const i = bisect.right(data, date);
-    //     // mutable lookup = new Date(date);
-    // });
+    //     .on("mousemove", function (event) { 
+    //         return nickMaker.style("top", (event.clientY - 10) + "px").style("left", (event.clientX + 10) + "px"); })
+    //     .on("mouseout", function () { 
+    //         <SidePiece setVisible={false} />
+    //         return nickMaker.style("visibility", "hidden"); 
+    //     });
+   
+    svg.on("click", function (event) {
+        var mouse = d3.pointer(this);
+        // svg
+        //     .append("use")
+        //     .attr("href", "#pointer")
+        //     .attr("x", mouse[0])
+        //     .attr("y", mouse[1])
+        //     .attr("fill", "#039BE5")
+        //     .attr("stroke", "#039BE5")
+        //     .style("background", "#000  ")
+        //     .attr("stroke-width", "1px");
+        // return <SidePiece setVisible={true}></SidePiece>
+        let bob = SidePiece({ setVisible :true}, mouse, event, null)
+        let bobString = renderToString(bob)
+        d3.select("#bucket")
+            .html(bobString)
+        // d3.select("#bucket")
+        //     .append("div")
+        //     .style("position", "absolute")
+        //     .style("z-index", "10")
+        //     .style("visibility", "visible")
+        //     .style("background", "#FF0000")
+        //     .text(event.target.__data__.data.activityName);
+            // .text("a simple tooltip");
+    });
     return (
         <>
             <>
-                {/* <body> */}
+                <body>
                 <h3> The basic Donut Chart</h3>
-                <div id="my_dataviz"></div>
-                {/* </body> */}
+                
+                        <div id="my_dataviz"></div>
+                        
+                
+                <div id='bucket'></div>
+                
+                </body>
             </>
         </>
     )
+
+    let infoBox:any = null;
+
+    // function mouseEnter() {
+    //     if (infoBox)
+    //         return;
+    //     let mouse = d3.mouse
+    //     var coord = svg.on("click", )
+    //     d3.pointer(d3.event.currentTarget);
+    //     x1 = parseInt(coord[0]);
+    //     y1 = parseInt(coord[1]);
+
+    //     console.log("mouseEnter", x1, y1, infoBox);
+
+    //     infoBox = theSVG.append("g")
+    //         .attr('class', 'ssInfoBox');
+
+    //     var rectItem = infoBox.append("rect")
+    //         .attr('x', x1)
+    //         .attr('y', y1)
+    //         .attr('width', 30)
+    //         .attr('height', 20);
+
+    //     var textItem = infoBox.append("text")
+    //         .attr('x', x1)
+    //         .attr('y', y1)
+    //         .text("bobo");
+    // }
+
+    // function mouseExit() {
+    //     if (infoBox === null)
+    //         return;
+
+    //     console.log("mouseExit", infoBox);
+    //     infoBox.remove()
+    //     infoBox = null;
+    // }
 }
 
 export default MyBasicDonut

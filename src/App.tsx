@@ -4,6 +4,7 @@ import './App.css';
 import DonutChartWidget from './DonutCharts/DonutChartWidget';
 import  BasicDonut from './basicDonut/basic_donut'
 import MyBasicDonut from './myBasicDonut/myBasicDonut'
+import SidePiece from './myBasicDonut/sidePiece';
 function App() {
   return (
     <div className="App">
