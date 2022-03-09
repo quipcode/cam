@@ -15,8 +15,10 @@ interface Data {
     duration?: string
 }
 
+
 const MyBasicDonut = () => {
     const [data, setData] = useState<Types.Data[]>([{}])
+    const [activityColor, setActivityColor] = useState<Types.ActivityColor[]>([{}])
     const [gappedData, setGappedData] = useState<Types.Data[]>([{}])
     let now = new Date()
     let thisYear = now.getFullYear()
@@ -127,7 +129,7 @@ const MyBasicDonut = () => {
         let gappedDay = []
         while( idx < endIdx){
             let currentActivity = sortedActivities[idx]
-            console.log(sortedActivities)
+            // console.log(sortedActivities)
             let activityStartTime = parseInt(currentActivity.startTime!) 
             let activityEndTime = parseInt(currentActivity.endTime!)
             if (activityStartTime == currentTime ){
@@ -153,10 +155,18 @@ const MyBasicDonut = () => {
     }
 
     let gappingDay = makingGaps(rawData)
-    console.log("ungapped day")
-    console.log(rawData)
-    console.log("gapped day")
-    console.log(gappingDay)
+    // console.log("ungapped day")
+    // console.log(rawData)
+    // console.log("gapped day")
+    // console.log(gappingDay)
+
+const loadColorData = () => {
+    d3.dsv(',', '/data/color.csv', (d) => {
+        return (d as unknown) as Types.ActivityColor[]
+    }).then((d) => {
+        setActivityColor((d as unknown) as Types.ActivityColor[])
+    })
+}
 
     const loadData = () => {
         d3.dsv(',', '/data/mybasicdonut.csv', (d) => {
@@ -170,7 +180,18 @@ const MyBasicDonut = () => {
     useEffect(() => {
         if (data.length <= 1)
             loadData()
+        if (activityColor.length <= 1)
+            loadColorData()
     })
+    console.log("in the big leagues")
+    
+    let coloredActivityName:string[] = [], associatedColor:string[] = []
+    activityColor.forEach((v) => {
+        coloredActivityName.push(v.activityName!)
+        associatedColor.push(v.colorHexCode!)
+    })
+    console.log(activityColor, data)
+    console.log(coloredActivityName, associatedColor)
     // set the dimensions and margins of the graph
     const width = 450,
         height = 450,
@@ -193,14 +214,15 @@ const MyBasicDonut = () => {
     // set the color scale
     const color = d3.scaleOrdinal()
         .domain(
-            
-            (d3.extent(gappingDay, (d) => {
-                    return d.activityName
-                }) as unknown) as string
+                coloredActivityName
+            // (d3.extent(gappingDay, (d) => {
+            //         return d.activityName
+            //     }) as unknown) as string
         )
         // .domain(["a", "b", "c", "d", "e", "f", "g", "h"])
         // .range(d3.schemeDark2);
-        .range(d3.schemeCategory10);
+        // .range(d3.schemeCategory10);
+        .range(associatedColor);
 
     // Compute the position of each group on the pie:
     const pie = d3.pie()

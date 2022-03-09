@@ -8,6 +8,12 @@ export namespace Types {
         endTime?: number,
         duration?:number
     }
+    export type  ActivityColor = {
+        userName?: string,
+        activityName?: string,
+        colorHexCode?: string,
+    }
+
     export type Dimensions = {
         width: number
         height: number
