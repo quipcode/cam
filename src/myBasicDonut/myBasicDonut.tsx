@@ -160,6 +160,7 @@ const MyBasicDonut = () => {
     // console.log("gapped day")
     // console.log(gappingDay)
 
+
 const loadColorData = () => {
     d3.dsv(',', '/data/color.csv', (d) => {
         return (d as unknown) as Types.ActivityColor[]
@@ -183,15 +184,24 @@ const loadColorData = () => {
         if (activityColor.length <= 1)
             loadColorData()
     })
-    console.log("in the big leagues")
-    
+
+
+    const activityColorMap = Object.fromEntries(
+        activityColor.map(({
+            activityName,
+            colorHexCode
+        }) => [
+            activityName,
+            colorHexCode])
+    )
+    // console.log(activityColorMap)
     let coloredActivityName:string[] = [], associatedColor:string[] = []
     activityColor.forEach((v) => {
         coloredActivityName.push(v.activityName!)
         associatedColor.push(v.colorHexCode!)
     })
-    console.log(activityColor, data)
-    console.log(coloredActivityName, associatedColor)
+    // console.log(activityColor, data)
+    // console.log(coloredActivityName, associatedColor)
     // set the dimensions and margins of the graph
     const width = 450,
         height = 450,
@@ -338,7 +348,9 @@ const loadColorData = () => {
         //     .style("background", "#000  ")
         //     .attr("stroke-width", "1px");
         // return <SidePiece setVisible={true}></SidePiece>
-        let bob = SidePiece({ setVisible :true}, mouse, event, null)
+        console.log("pre-form")
+        console.log(activityColor)
+        let bob = SidePiece({ setVisible: true }, mouse, event, null, activityColorMap)
         let bobString = renderToString(bob)
         d3.select("#bucket")
             .html(bobString)

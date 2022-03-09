@@ -1,6 +1,6 @@
 import React from 'react'
 
-const SidePiece = (props: any, mouse: any, event: any, data: any) => {
+const SidePiece = (props: any, mouse: any, event: any, data: any, activityColorMap: any) => {
     //msToTime from https://stackoverflow.com/questions/19700283/how-to-convert-time-in-milliseconds-to-hours-min-sec-format-in-javascript
     function msToTime(durationString: string) {
         let duration = parseInt(durationString)
@@ -37,7 +37,8 @@ const SidePiece = (props: any, mouse: any, event: any, data: any) => {
             // ].join(':')
         );
     }
-
+    console.log("in the form ")
+    console.log(event, activityColorMap)
     return props.setVisible ? 
     <div>
         <form>
@@ -49,7 +50,7 @@ const SidePiece = (props: any, mouse: any, event: any, data: any) => {
                 <input type="text" id="activityName" name="activityName" value={event.target.__data__.data.activityName}/>
                 <br/>
                 <label htmlFor="activityColor">Select your activity color:</label>
-                <input type="color" id="activityColor" name="activityColor"/>
+                <input type="color" id="activityColor" name="activityColor" value={activityColorMap[event.target.__data__.data.activityName]}/>
                 <br />
                 <label htmlFor="startTime">Activity Start Time: </label>
                 <input type="time" id="startTimeForm" name="startTime" value={msToTime(event.target.__data__.data.startTime)}/>
