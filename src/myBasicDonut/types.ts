@@ -1,12 +1,13 @@
 export namespace Types {
     export type Data = {
-        userName?: string,
-        date?: number,
-        activityId?: string,
-        activityName?: string,
-        startTime?: number,
-        endTime?: number,
-        duration?:number
+        userName: string,
+        activityId: string,
+        activityName: string,
+        startTime: string,
+        endTime: string,
+        duration: string,
+        dayStart: string;
+        dayEnd: string;
     }
     export type  ActivityColor = {
         userName?: string,

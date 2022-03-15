@@ -1,15 +1,18 @@
-import React from 'react'
+import React, { useEffect, useCallback, useState } from 'react'
+import { Types } from './types'
 
-const SidePiece = (props: any, mouse: any, event: any, data: any, activityColorMap: any) => {
+const SidePiece = ({ data, activityColorMap, onSubmit}: any) => {
+
+    const [activity, setActivity] = useState<Types.Data>(data)
     //msToTime from https://stackoverflow.com/questions/19700283/how-to-convert-time-in-milliseconds-to-hours-min-sec-format-in-javascript
-    function msToTime(durationString: string) {
-        let duration = parseInt(durationString)
+    function msToTime(durationString: number) {
+        let duration = durationString
         var milliseconds = Math.floor((duration % 1000) / 100),
             seconds = Math.floor((duration / 1000) % 60),
             minutes = Math.floor((duration / (1000 * 60)) % 60),
             hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
 
-       let hoursString = (hours < 10) ? "0" + hours : hours;
+        let hoursString = (hours < 10) ? "0" + hours : hours;
         let minutesString = (minutes < 10) ? "0" + minutes : minutes;
         let secondsString = (seconds < 10) ? "0" + seconds : seconds;
 
@@ -20,13 +23,14 @@ const SidePiece = (props: any, mouse: any, event: any, data: any, activityColorM
         return num.toString().padStart(2, '0');
     }
 
-    function formatDate(date : Date) {
+    function formatDate(date: Date) {
+        console.log("the data is 00 ", date, date.getFullYear())
         return (
             [
                 date.getFullYear(),
                 padTo2Digits(date.getMonth() + 1),
                 padTo2Digits(date.getDate()),
-                
+
             ].join('-')
             //  +
             // ' ' +
@@ -37,29 +41,66 @@ const SidePiece = (props: any, mouse: any, event: any, data: any, activityColorM
             // ].join(':')
         );
     }
-    console.log("in the form ")
-    console.log(event, activityColorMap)
-    return props.setVisible ? 
-    <div>
-        <form>
-                
+    function myUpdate(data: any){
+        // console.log("in my update")
+        // console.log(data.target.value)
+        // console.log(data.target.name)
+        
+        setActivity({...activity,
+            [data.target.name]: data.target.value
+        
+        })
+    }
 
-                <input type="date" value={formatDate(new Date(parseInt(event.target.__data__.data.startTime)))} />
+    useEffect(()=>{
+        setActivity(data)
+    },[])
+    return data ?
+    
+        // <div><p>I'm drowning</p></div>
+        <div>
+            {console.log(data,
+                data.startTime,
+                formatDate(new Date(parseInt(data.startTime))),
+                data.activityName,
+                data.startTime,
+                data.endTime
+                )}
+            <form onSubmit={e => {
+                e.preventDefault();
+                onSubmit(data)
+            }}
+                // onChange={e => myUpdate(e)}
+            >
+
+                <input type="date" defaultValue={formatDate(new Date(data.startTime))} />
                 <br />
                 <label htmlFor="activityName">Activity Name: </label>
-                <input type="text" id="activityName" name="activityName" value={event.target.__data__.data.activityName}/>
-                <br/>
+                <input type="text" id="activityName" name="activityName" defaultValue={data.activityName} />
+                <br />
                 <label htmlFor="activityColor">Select your activity color:</label>
-                <input type="color" id="activityColor" name="activityColor" value={activityColorMap[event.target.__data__.data.activityName]}/>
+
+                <input type="color" id="activityColor" name="activityColor" defaultValue={activityColorMap[data.activityName]} />
                 <br />
                 <label htmlFor="startTime">Activity Start Time: </label>
-                <input type="time" id="startTimeForm" name="startTime" value={msToTime(event.target.__data__.data.startTime)}/>
+                <input type="time" id="startTimeForm" name="startTime" defaultValue={msToTime(parseInt(data.startTime))} />
                 <br />
                 <label htmlFor="endTime">Activity End Time: </label>
-                <input type="time" id="endTimeForm" name="endTime" value={msToTime(event.target.__data__.data.endTime)} />
-        </form>
-        
-    </div> : <div><p>I'm drowning</p></div>
+                <input type="time" id="endTimeForm" name="endTime" defaultValue={msToTime(parseInt(data.endTime))} />
+                <button type="submit" >Update</button>
+            </form>
+
+        </div>
+ : 
+ <div>
+ {console.log(data)}
+ <p>nope</p>
+        </div>       
+ 
+ 
+ 
+  
+
 }
 
 export default SidePiece

@@ -4,7 +4,7 @@ import { Types } from './types'
 import SidePiece from './sidePiece'
 import { renderToString } from 'react-dom/server'
 
-interface Data {
+interface RawData {
     userName?: string;
     dayStart?: string;
     dayEnd?: string;
@@ -15,11 +15,11 @@ interface Data {
     duration?: string
 }
 
-
 const MyBasicDonut = () => {
-    const [data, setData] = useState<Types.Data[]>([{}])
+    const [data, setData] = useState<Types.Data[]>([])
+    const [gappedData, setGappedData] = useState<Types.Data[]>([])
     const [activityColor, setActivityColor] = useState<Types.ActivityColor[]>([{}])
-    const [gappedData, setGappedData] = useState<Types.Data[]>([{}])
+    const [selectedActivity, setSelectedActivity] = useState<Types.Data>()
     let now = new Date()
     let thisYear = now.getFullYear()
     let thisMonth = now.getMonth()
@@ -89,18 +89,18 @@ const MyBasicDonut = () => {
             "duration": "1800000"
         }
     ]
-    const sortData = (opts: Data[]) => {
+    const sortData = (opts: Types.Data[]) => {
         let newArray = [...opts]
         newArray.sort((a, b): any => {
             if (a.startTime && b.startTime) {
-                return parseInt(a.startTime) - parseInt(b.startTime)
+                return parseInt(a.startTime)- parseInt(b.startTime)
             }
         })
         return newArray
     }
 
-    const createGap = (opts: Data) => {
-        let newGap = {...opts}
+    const createGap = (opts: Types.Data) => {
+        let newGap = { ...opts }
         if (newGap.endTime && newGap.startTime) {
             let numDuration = parseInt(newGap.endTime) - parseInt(newGap.startTime)
             newGap.duration = numDuration.toString()
@@ -115,7 +115,7 @@ const MyBasicDonut = () => {
     // start at starttime and find nextActivity
     //create gap from startTime to nextActivity
     // if activity present don't create gap...instead update currenttime to activity end time
-    const makingGaps = (opts: Data[]) => {
+    const makingGaps = (opts: Types.Data[]) => {
         let sortedActivities = sortData(opts)
         var dayStart = new Date();
         dayStart.setUTCHours(0, 0, 0, 0);
@@ -123,20 +123,20 @@ const MyBasicDonut = () => {
         var dayEnd = new Date();
         dayEnd.setUTCHours(23, 59, 59, 999);
 
-        let currentTime = parseInt(sortedActivities[0].dayStart!) ||  dayStart 
+        let currentTime = parseInt(sortedActivities[0].dayStart!) || dayStart
         let endDayTime = parseInt(sortedActivities[0].dayEnd!) || dayEnd
         let idx = 0, endIdx = sortedActivities.length
         let gappedDay = []
-        while( idx < endIdx){
+        while (idx < endIdx) {
             let currentActivity = sortedActivities[idx]
-            // console.log(sortedActivities)
-            let activityStartTime = parseInt(currentActivity.startTime!) 
+            // console.log(sortedActivities)/
+            let activityStartTime = parseInt(currentActivity.startTime!)
             let activityEndTime = parseInt(currentActivity.endTime!)
-            if (activityStartTime == currentTime ){
+            if (activityStartTime == currentTime) {
                 gappedDay.push(currentActivity)
-                
-            }else{
-                let gappedDataDay = {} as Data
+
+            } else {
+                let gappedDataDay = {} as Types.Data
                 gappedDataDay.dayStart = dayStart.toString()
                 gappedDataDay.dayEnd = dayEnd.toString()
                 let gapStart = currentTime
@@ -154,54 +154,63 @@ const MyBasicDonut = () => {
         return gappedDay
     }
 
+    let coloredActivityName: string[] = [], associatedColor: string[] = []
+    activityColor.forEach((v) => {
+        coloredActivityName.push(v.activityName!)
+        associatedColor.push(v.colorHexCode!)
+    })
+
     let gappingDay = makingGaps(rawData)
     // console.log("ungapped day")
     // console.log(rawData)
     // console.log("gapped day")
     // console.log(gappingDay)
 
-
-const loadColorData = () => {
-    d3.dsv(',', '/data/color.csv', (d) => {
-        return (d as unknown) as Types.ActivityColor[]
-    }).then((d) => {
-        setActivityColor((d as unknown) as Types.ActivityColor[])
-    })
-}
+    const loadColorData = () => {
+        d3.dsv(',', '/data/color.csv', (d) => {
+            return (d as unknown) as Types.ActivityColor[]
+        }).then((d) => {
+            setActivityColor((d as unknown) as Types.ActivityColor[])
+        })
+    }
 
     const loadData = () => {
         d3.dsv(',', '/data/mybasicdonut.csv', (d) => {
-            return (d as unknown) as Types.Data[]
+            return (d as unknown) as RawData[]
         }).then((d) => {
-            setData((d as unknown) as Types.Data[])
-            setGappedData((d as unknown) as Types.Data[])
+            
+            setData((mapFromRawDataToData(d)) as Types.Data[])
+            setGappedData(mapFromRawDataToData(d) as Types.Data[])
         })
     }
-    
+
+    function mapFromRawDataToData(csvStringData: any): any {
+
+        return csvStringData.map((e: any) => {
+            return {
+                activityId: parseInt(e["activityId"]),
+                activityName: e["activityName"],
+                dayEnd: parseInt(e["dayEnd"]),
+                dayStart: parseInt(e["dayStart"]),
+                duration: parseInt(e["duration"]),
+                endTime: parseInt(e["endTime"]),
+                startTime: parseInt(e["startTime"]),
+                userName: e["userName"],
+            }
+        })
+
+
+    }
+    // useEffect(() => {
+        
+    // }, [selectedActivity]);
     useEffect(() => {
         if (data.length <= 1)
             loadData()
+            // console.log("loading data")
         if (activityColor.length <= 1)
             loadColorData()
-    })
-
-
-    const activityColorMap = Object.fromEntries(
-        activityColor.map(({
-            activityName,
-            colorHexCode
-        }) => [
-            activityName,
-            colorHexCode])
-    )
-    // console.log(activityColorMap)
-    let coloredActivityName:string[] = [], associatedColor:string[] = []
-    activityColor.forEach((v) => {
-        coloredActivityName.push(v.activityName!)
-        associatedColor.push(v.colorHexCode!)
-    })
-    // console.log(activityColor, data)
-    // console.log(coloredActivityName, associatedColor)
+    },[])
     // set the dimensions and margins of the graph
     const width = 450,
         height = 450,
@@ -221,10 +230,9 @@ const loadColorData = () => {
     // Create dummy data
     // const data = { a: 9, b: 20, c: 30, d: 8, e: 12, f: 3, g: 7, h: 14 }
 
-    // set the color scale
     const color = d3.scaleOrdinal()
         .domain(
-                coloredActivityName
+            coloredActivityName
             // (d3.extent(gappingDay, (d) => {
             //         return d.activityName
             //     }) as unknown) as string
@@ -233,6 +241,18 @@ const loadColorData = () => {
         // .range(d3.schemeDark2);
         // .range(d3.schemeCategory10);
         .range(associatedColor);
+
+    // set the color scale
+    // const color = d3.scaleOrdinal()
+    //     .domain(
+
+    //         (d3.extent(gappingDay, (d) => {
+    //             return d.activityName
+    //         }) as unknown) as string
+    //     )
+    //     // .domain(["a", "b", "c", "d", "e", "f", "g", "h"])
+    //     // .range(d3.schemeDark2);
+    //     .range(d3.schemeCategory10);
 
     // Compute the position of each group on the pie:
     const pie = d3.pie()
@@ -243,7 +263,7 @@ const loadColorData = () => {
     //@ts-ignore
     // const data_ready = pie(Object.entries(data))
     // const pieData = pie(data)
-    const data_ready = pie(gappingDay)
+    const data_ready = pie(gappedData)
 
     // The arc generator
     const arc = d3.arc()
@@ -267,8 +287,8 @@ const loadColorData = () => {
         .attr("stroke", "white")
         .style("stroke-width", "2px")
         .style("opacity", 0.7)
-        // .enter()
-        // .append("div");
+    // .enter()
+    // .append("div");
 
     // Add the polylines between chart and labels:
     svg
@@ -310,7 +330,7 @@ const loadColorData = () => {
             const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
             return (midangle < Math.PI ? 'start' : 'end')
         })
-    
+
     // svg.on("mouseover", function (event) { TimeEditor.text(event.target.__data__.data.activityName); return TimeEditor.style("visibility", "visible");  })
     //     .on("mousemove", function (event) { return TimeEditor.style("top", (event.clientY - 10) + "px").style("left", (event.clientX + 10) + "px"); })
     //     .on("mouseout", function () { return TimeEditor.style("visibility", "hidden"); });
@@ -327,7 +347,7 @@ const loadColorData = () => {
     //     nickMaker.text(event.target.__data__.data.activityName); 
     //     <SidePiece setVisible={true} />
     //     return nickMaker.style("visibility", "visible"); 
-        
+
     // })
     //     .on("mousemove", function (event) { 
     //         return nickMaker.style("top", (event.clientY - 10) + "px").style("left", (event.clientX + 10) + "px"); })
@@ -335,9 +355,43 @@ const loadColorData = () => {
     //         <SidePiece setVisible={false} />
     //         return nickMaker.style("visibility", "hidden"); 
     //     });
-   
+
+    function myHandler(event: any){
+        // console.log(event.target.__data__.data)
+        // console.log(event)
+        let acti = event.target.__data__.data
+        let keys = Object.keys(acti)
+        let stringMap = {} as Types.Data
+        stringMap.activityId = acti["activityId"].toString()
+        stringMap.userName = acti["userName"].toString()
+        stringMap.activityName = acti["activityName"].toString()
+        stringMap.startTime = acti["startTime"].toString()
+        stringMap.endTime = acti["endTime"].toString()
+        stringMap.duration = acti["duration"].toString()
+        stringMap.dayStart = acti["dayStart"].toString()
+        stringMap.dayEnd = acti["dayEnd"].toString()
+        // console.log(stringMap)
+        // setSelectedActivity(event.target.__data__.data)
+        setSelectedActivity(stringMap)
+        // console.log(selectedActivity)
+    }
+
+    function onSubmitHandler(submittedData: any){
+        
+        let listOfData = data
+        let updatedList = listOfData.map((entry : any) => {
+            if (entry["activityId"] == submittedData["activityId"]){
+                entry = submittedData
+            }
+            return entry
+        })
+        setData(updatedList)
+        
+    }
+
     svg.on("click", function (event) {
         var mouse = d3.pointer(this);
+        myHandler(event)
         // svg
         //     .append("use")
         //     .attr("href", "#pointer")
@@ -348,12 +402,10 @@ const loadColorData = () => {
         //     .style("background", "#000  ")
         //     .attr("stroke-width", "1px");
         // return <SidePiece setVisible={true}></SidePiece>
-        console.log("pre-form")
-        console.log(activityColor)
-        let bob = SidePiece({ setVisible: true }, mouse, event, null, activityColorMap)
-        let bobString = renderToString(bob)
-        d3.select("#bucket")
-            .html(bobString)
+        // let bob = SidePiece({ setVisible: true }, mouse, event, null, activityColorMap )
+        // let bobString = renderToString(bob)
+        // d3.select("#bucket")
+        //     .html(bobString)
         // d3.select("#bucket")
         //     .append("div")
         //     .style("position", "absolute")
@@ -361,25 +413,38 @@ const loadColorData = () => {
         //     .style("visibility", "visible")
         //     .style("background", "#FF0000")
         //     .text(event.target.__data__.data.activityName);
-            // .text("a simple tooltip");
+        // .text("a simple tooltip");
     });
+    const activityColorMap = Object.fromEntries(
+        activityColor.map(({
+            activityName,
+            colorHexCode
+        }) => [
+                activityName,
+                colorHexCode])
+    )
+    // console.log(activityColorMap)
     return (
         <>
             <>
-                <body>
-                <h3> The basic Donut Chart</h3>
                 
-                        <div id="my_dataviz"></div>
-                        
+                    <h3> The basic Donut Chart</h3>
+
+                    <div id="my_dataviz"></div>
+
+
+                    <div id='bucket'></div>
+                {/* {selectedActivity && <SidePiece data={selectedActivity} setVisible={true} activityColorMap={activityColorMap} onSubmit={onSubmitHandler} /> } */}
+                <SidePiece data={selectedActivity} activityColorMap={activityColorMap} onSubmit={onSubmitHandler} />
+               
+
                 
-                <div id='bucket'></div>
                 
-                </body>
             </>
         </>
     )
 
-    let infoBox:any = null;
+    let infoBox: any = null;
 
     // function mouseEnter() {
     //     if (infoBox)
@@ -418,3 +483,4 @@ const loadColorData = () => {
 }
 
 export default MyBasicDonut
+

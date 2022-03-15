@@ -5,6 +5,8 @@ import DonutChartWidget from './DonutCharts/DonutChartWidget';
 import  BasicDonut from './basicDonut/basic_donut'
 import MyBasicDonut from './myBasicDonut/myBasicDonut'
 import SidePiece from './myBasicDonut/sidePiece';
+import ScheduleContext from './myBasicDonut/donutContext'
+// import VersionContext from './myBasicDonut/donutContext'
 function App() {
   return (
     <div className="App">
@@ -24,6 +26,8 @@ function App() {
       </header> */}
       <h1>Hi there buddy</h1>
       {/* <BasicDonut/> */}
+      <ScheduleContext/>
+      {/* <VersionContext/> */}
       <MyBasicDonut/>
     </div>
   );
