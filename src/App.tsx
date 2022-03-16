@@ -7,6 +7,18 @@ import MyBasicDonut from './myBasicDonut/myBasicDonut'
 import SidePiece from './myBasicDonut/sidePiece';
 import ScheduleContext from './myBasicDonut/donutContext'
 // import VersionContext from './myBasicDonut/donutContext'
+
+import TodoProvider from './todo/context/todoContext';
+import ThemeProvider from './todo/context/themeContext';
+import Todos from './todo/containers/Todos';
+import AddTodo from './todo/components/AddTodo';
+import ThemeWrapper from './todo/components/ThemeWrapper';
+
+import CamProvider from './cam/context/camContext';
+import CamThemeProvider from './cam/context/camThemeContext';
+import Cams from './cam/containers/Cams'
+import CamThemeWrapper from './cam/components/CamThemeWrapper';
+
 function App() {
   return (
     <div className="App">
@@ -26,9 +38,32 @@ function App() {
       </header> */}
       <h1>Hi there buddy</h1>
       {/* <BasicDonut/> */}
-      <ScheduleContext/>
+      {/* <ScheduleContext/> */}
       {/* <VersionContext/> */}
-      <MyBasicDonut/>
+      {/* <MyBasicDonut/> */}
+      
+      {/* <ThemeProvider>
+        <TodoProvider>
+          <ThemeWrapper>
+            <main className="App">
+              <h1>My Todos</h1>
+              <AddTodo />
+              <Todos />
+            </main>
+          </ThemeWrapper>
+        </TodoProvider>
+      </ThemeProvider> */}
+      <CamThemeProvider>
+        <CamProvider>
+          <CamThemeWrapper>
+            <main className="App">
+              <h1>My Cam</h1>
+              
+              <Cams />
+            </main>
+          </CamThemeWrapper>
+        </CamProvider>
+      </CamThemeProvider>
     </div>
   );
 }

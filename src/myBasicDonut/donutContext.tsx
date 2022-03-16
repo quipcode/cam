@@ -38,16 +38,16 @@ const initialState = {
     // setData: null,
     // setGappedData: null
 
-    // setUserName: (value: any) => { },
-    // setActivityId: (value: any) => { },
-    // setActivityName: (value: any) => { },
-    // setStartTime: (value: any) => { },
-    // setEndTime: (value: any) => { },
-    // setDuration: (value: any) => { },
-    // setDayStart: (value: any) => { },
-    // setDayEnd: (value: any) => { },
-    // setData: (value: any) => { },
-    // setGappedData: (value: any) => { }
+    setUserName: (value: any) => { },
+    setActivityId: (value: any) => { },
+    setActivityName: (value: any) => { },
+    setStartTime: (value: any) => { },
+    setEndTime: (value: any) => { },
+    setDuration: (value: any) => { },
+    setDayStart: (value: any) => { },
+    setDayEnd: (value: any) => { },
+    setData: (value: any) => { },
+    setGappedData: (value: any) => { }
 }
 
 function reducer(state: any, action: any) {
@@ -90,7 +90,9 @@ export default function ScheduleContext() {
     );
 }
 
-const DonutContext = React.createContext(null);
+const DonutContext = React.createContext(initialState);
+// export type Context = ReturnType<typeof ScheduleContext>;
+// const Context = React.createContext<Context | undefined>(undefined);
 
 function Provider({ children }: any) {
     const [state, dispatch] = React.useReducer(reducer, initialState);
