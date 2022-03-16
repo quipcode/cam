@@ -17,8 +17,10 @@ import ThemeWrapper from './todo/components/ThemeWrapper';
 import CamProvider from './cam/context/camContext';
 import CamThemeProvider from './cam/context/camThemeContext';
 import Cams from './cam/containers/Cams'
+import AddCam from './cam/components/AddCam';
 import CamThemeWrapper from './cam/components/CamThemeWrapper';
-
+import Donuts from './cam/containers/Donuts';
+import CamColorProvider from './cam/context/camColorContext';
 function App() {
   return (
     <div className="App">
@@ -41,7 +43,7 @@ function App() {
       {/* <ScheduleContext/> */}
       {/* <VersionContext/> */}
       {/* <MyBasicDonut/> */}
-      
+
       {/* <ThemeProvider>
         <TodoProvider>
           <ThemeWrapper>
@@ -56,11 +58,14 @@ function App() {
       <CamThemeProvider>
         <CamProvider>
           <CamThemeWrapper>
+            <CamColorProvider>
             <main className="App">
               <h1>My Cam</h1>
-              
-              <Cams />
+              <Donuts/>
+              {/* <AddCam/>
+              <Cams /> */}
             </main>
+            </CamColorProvider>
           </CamThemeWrapper>
         </CamProvider>
       </CamThemeProvider>
