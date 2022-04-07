@@ -25,4 +25,5 @@ export type CamContextType = {
     cams: ICam[];
     saveCam: (cam: ICam) => void;
     updateCam: (cam: ICam) => void;
+    makingGaps : (cams: ICam[]) => void;
 }

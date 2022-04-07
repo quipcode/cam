@@ -21,6 +21,7 @@ import AddCam from './cam/components/AddCam';
 import CamThemeWrapper from './cam/components/CamThemeWrapper';
 import Donuts from './cam/containers/Donuts';
 import CamColorProvider from './cam/context/camColorContext';
+import FooBarApp from './fooBar';
 function App() {
   return (
     <div className="App">
@@ -39,6 +40,7 @@ function App() {
         </a>
       </header> */}
       <h1>Hi there buddy</h1>
+      <FooBarApp/>
       {/* <BasicDonut/> */}
       {/* <ScheduleContext/> */}
       {/* <VersionContext/> */}
@@ -55,20 +57,20 @@ function App() {
           </ThemeWrapper>
         </TodoProvider>
       </ThemeProvider> */}
-      <CamThemeProvider>
+      {/* <CamThemeProvider>
         <CamProvider>
           <CamThemeWrapper>
             <CamColorProvider>
             <main className="App">
               <h1>My Cam</h1>
               <Donuts/>
-              {/* <AddCam/>
-              <Cams /> */}
+              <AddCam/>
+              <Cams />
             </main>
             </CamColorProvider>
           </CamThemeWrapper>
         </CamProvider>
-      </CamThemeProvider>
+      </CamThemeProvider> */}
     </div>
   );
 }

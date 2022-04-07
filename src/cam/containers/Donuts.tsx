@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { useContext } from 'react';
 import { CamContextType, ICam, ICamColor, CamColorContextType } from '../@types/cam'
 import { CamContext } from '../context/camContext'
 import { CamColorContext } from '../context/camColorContext'
@@ -6,14 +7,16 @@ import Cam from '../components/Cam'
 import * as d3 from 'd3'
 
 const Donuts = () => {
-    const { cams, updateCam } = React.useContext(CamContext) as CamContextType;
+    // const { cams, updateCam } = useContext(CamContext) 
     const { colors, updateColor } = React.useContext(CamColorContext) as CamColorContextType;
     // const [activityColor, setActivityColor] = React.useState<ICamColor[]>([{}])
     let coloredActivityName: string[] = [], associatedColor: string[] = []
     colors.forEach((v) => {
         coloredActivityName.push(v.momentName!)
         associatedColor.push(v.colorHexCode!)
-    })
+    })  
+    // let gappedCams = makingGaps(cams)
+
 
     // set the dimensions and margins of the graph
     const width = 450,
@@ -42,8 +45,6 @@ const Donuts = () => {
         //@ts-ignore
         .value(d => d.duration)
     //@ts-ignore
-    // const data_ready = pie(Object.entries(data))
-    // const pieData = pie(data)
     const data_ready = pie(cams)
 
     // The arc generator
@@ -111,11 +112,16 @@ const Donuts = () => {
             const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
             return (midangle < Math.PI ? 'start' : 'end')
         })
-
+    
+    svg.on("click", function(event){
+        var mouse = d3.pointer(this)
+        console.log(event.target.__data__.data)
+    })
 
     return (
         <>
-            {console.log(cams, colors, associatedColor, coloredActivityName)}
+            {/* {console.log(cams, colors, associatedColor, coloredActivityName)} */}
+            
             {/* {console.log(cams, data_ready, activityColor)} */}
             <div id="dataviz"></div>
             {/* {cams.map((cam: ICam) => {

@@ -210,6 +210,7 @@ const MyBasicDonut = () => {
             // console.log("loading data")
         if (activityColor.length <= 1)
             loadColorData()
+
     },[])
     // set the dimensions and margins of the graph
     const width = 450,
