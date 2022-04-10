@@ -17,6 +17,12 @@ export function camReducer(state: CamState, action: Actions): CamState{
                     startTime: state.cam.startTime * 2,
                 },
             }
+        case "setCamForm":
+            action.payload.establishCamForm();
+            return{
+                ...state,
+                camForm: action.payload,
+            }
     }
 }
 
@@ -25,13 +31,22 @@ export interface Cam{
     startTime: number;
 }
 
+export interface CamForm{
+    establishCamForm: () => void;
+    activityName: string;
+    startTime: number;
+    endTime: number;
+}
+
 export type CamState = {
     cam: Cam
+    camForm: CamForm
 }
 
 export type ActionsMap = {
     setCam: Cam;
-    doubleCam: undefined
+    doubleCam: undefined;
+    setCamForm: CamForm
 }
 
 export type Actions = {

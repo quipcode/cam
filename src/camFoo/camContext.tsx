@@ -3,6 +3,7 @@ import {
     camReducer,
     CamState,
     Cam,
+    CamForm,
     Actions,
     ActionsMap    
 } from './camReducer'
@@ -24,14 +25,26 @@ const startingCam: Cam = {
     startTime: 1
 }
 
+const startingCamForm: CamForm = {
+    establishCamForm: function (): void {
+        throw new Error('Function not implemented.');
+    },
+    activityName: '',
+    startTime: 0,
+    endTime: 0
+}
+
 export const CamContext = createContext<CamContextInterface>([
-    {cam: startingCam},
+    {cam: startingCam,
+    camForm: startingCamForm
+    },
     ()=> {}
 ])
 
 export function CamProvider ({children}: any){
     const [state, _dispatch] = useReducer(camReducer, {
         cam: startingCam,
+        camForm: startingCamForm
     })
 
     const dispatch: Dispatcher = useCallback((type, ...payload) => {
