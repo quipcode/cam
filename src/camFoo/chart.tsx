@@ -2,8 +2,10 @@ import React from 'react';
 import * as d3 from 'd3';
 import {useD3} from './useD3'
 import {Types} from './types'
+import { useCam } from './useCam'
 
 function Chart({data} : any){
+    const { cam, camForm, setCam, doubleCam, setCamForm } = useCam();
     const ref = useD3(
 
         (svg : any) => {
@@ -103,7 +105,23 @@ function Chart({data} : any){
                     const midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
                     return (midangle < Math.PI ? 'start' : 'end')
                 })
-
+            svg
+                .on("click", function (event: any) {
+                    // console.log(event)
+                    let activity = event.target.__data__.data
+                    let startTime = activity["startTime"].toString()
+                    let endTime = activity["endTime"].toString()
+                    let activityName = activity["activityName"].toString()
+                    
+                    setCamForm({
+                        startTime: startTime,
+                        endTime: endTime,
+                        activityName: activityName,
+                        establishCamForm() {
+                            console.log("hi")
+                        }
+                    })
+                })
 
         },
 
@@ -114,21 +132,13 @@ function Chart({data} : any){
     return (
         <div>
         <svg
-
             style={{
-
                 height: 500,
-
                 width: "100%",
-
                 marginRight: "0px",
-
                 marginLeft: "0px",
-
             }}
-
         >
-
             <g className="plot-area" />
         </svg>
         </div>

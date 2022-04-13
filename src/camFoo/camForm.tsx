@@ -1,9 +1,16 @@
 import React from "react"
 import { useCam } from './useCam'
 
+
 function CamForm() {
     const { cam, camForm, setCam, doubleCam, setCamForm } = useCam();
-
+function millisecondsStringToHourMinute(milliString: number){
+    //@ts-ignore
+    let milliNum = parseInt(milliString)
+    var date = new Date(milliNum);
+    let options = {hourCycle: 'h23', hour: '2-digit', minute: '2-digit'}
+    return date.toLocaleString('en-US', {hourCycle: 'h23', hour: '2-digit', minute: '2-digit'});
+}
     return (
         <div>
             <h3>Cam Form</h3>
@@ -30,9 +37,7 @@ function CamForm() {
                     establishCamForm() {
                         console.log("hi")
                     }
-                }
-
-                )
+                })
             }
             }>
 
@@ -41,11 +46,11 @@ function CamForm() {
                 <label htmlFor='activityId'>Activity Id: </label>
                 <input type="text" id='activityId' name='activityId' disabled /> <br /> */}
                 <label htmlFor='activityName'>Activity Name: </label>
-                <input type="text" id='activityName' name='activityName' /> <br />
+                <input type="text" id='activityName' name='activityName' defaultValue={camForm.activityName} /> <br />
                 <label htmlFor="startTime">StartTime: </label>
-                <input type="time" name='startTime' id='startTime' /> <br />
+                <input type="time" name='startTime' id='startTime' defaultValue={millisecondsStringToHourMinute(camForm.startTime)} /> <br />
                 <label htmlFor="endTime" >EndTime: </label>
-                <input type="time" name='endTime' id='endTime' /> <br />
+                <input type="time" name='endTime' id='endTime' defaultValue={millisecondsStringToHourMinute(camForm.endTime)} /> <br />
 
                 <input type="submit" value="Submit" />
             </form>
@@ -53,6 +58,7 @@ function CamForm() {
                 <p>startTime: {camForm.startTime}</p>
                 <p>endTime: {camForm.endTime}</p>
                 <p>activityName: {camForm.activityName}</p>
+                <p>StarttimeCorrected: {millisecondsStringToHourMinute(camForm.startTime)}</p>
             </div>
         </div>
     )

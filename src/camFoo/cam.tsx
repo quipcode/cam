@@ -116,7 +116,7 @@ const Cam = () => {
             posC[0] = radius * 0.95 * (midangle < Math.PI ? 1 : -1); // multiply by 1 or -1 to put it on the right or on the left
             return [posA, posB, posC]
         })
-
+ 
     // Add the polylines between chart and labels:
     svg
         .selectAll('allLabels')
