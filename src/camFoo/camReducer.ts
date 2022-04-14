@@ -14,7 +14,7 @@ export function camReducer(state: CamState, action: Actions): CamState{
                 ...state,
                 cam: {
                     ...state.cam,
-                    startTime: state.cam.startTime * 2,
+                    // startTime: state.cam.startTime * 2,
                 },
             }
         case "setCamForm":
@@ -25,10 +25,14 @@ export function camReducer(state: CamState, action: Actions): CamState{
             }
     }
 }
-
+export interface CamData {
+    activityName: string
+    startTime: string
+    endTime: string
+}
 export interface Cam{
     establishCam: () => void;
-    startTime: number;
+    data : Array<CamData>
 }
 
 export interface CamForm{

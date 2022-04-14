@@ -38,7 +38,7 @@ function Chart({data} : any){
                 .value(d => d.startTime)
             //@ts-ignore        
             // const data_ready = pie(Object.entries(data))
-            const data_ready = pie(data)
+            const data_ready = pie(cam.data)
 
             // The arc generator
             const arc = d3.arc()
@@ -125,7 +125,7 @@ function Chart({data} : any){
 
         },
 
-        [data.length]
+        [cam.data.length]
 
     );
 
