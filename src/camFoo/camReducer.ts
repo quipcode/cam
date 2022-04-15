@@ -26,6 +26,7 @@ export function camReducer(state: CamState, action: Actions): CamState{
     }
 }
 export interface CamData {
+    activityId: number
     activityName: string
     startTime: string
     endTime: string
@@ -37,6 +38,7 @@ export interface Cam{
 
 export interface CamForm{
     establishCamForm: () => void;
+    activityId: number;
     activityName: string;
     startTime: number;
     endTime: number;

@@ -107,12 +107,14 @@ function Chart({data} : any){
                 })
             svg
                 .on("click", function (event: any) {
-                    // console.log(event)
                     let activity = event.target.__data__.data
+                    // console.log(activity)
                     let startTime = parseInt(activity["startTime"].toString())
                     let endTime = parseInt(activity["endTime"].toString())
                     let activityName = activity["activityName"].toString()
+                    let activityId = activity["activityId"]
                     setCamForm({
+                        activityId: activityId,
                         startTime: startTime,
                         endTime: endTime,
                         activityName: activityName,

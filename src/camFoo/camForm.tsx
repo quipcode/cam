@@ -17,7 +17,8 @@ function millisecondsStringToHourMinute(milliString: number){
             <form onSubmit={(e) => {
                 e.preventDefault()
                 console.log("bob is in lovse")
-                console.log(e.target)
+                //@ts-ignore
+                console.log(e.target.elements)
                 const form = e.target;
                 // get the field that you want
                 // //@ts-ignore
@@ -30,7 +31,10 @@ function millisecondsStringToHourMinute(milliString: number){
                 const startTime = form.elements['startTime'].value;
                 //@ts-ignore
                 const endTime = form.elements['endTime'].value;
+                //@ts-ignore
+                const activityId = form.elements['activityId'].value;
                 setCamForm({
+                    activityId: activityId,
                     startTime: startTime,
                     endTime: endTime,
                     activityName: activityName,
@@ -43,8 +47,9 @@ function millisecondsStringToHourMinute(milliString: number){
 
                 {/* <label htmlFor='userName'>Username: </label>
                 <input type="text" id='userName' name='userName' disabled /> <br />
+                */}
                 <label htmlFor='activityId'>Activity Id: </label>
-                <input type="text" id='activityId' name='activityId' disabled /> <br /> */}
+                <input type="text" id='activityId' name='activityId' disabled value={camForm.activityId} /> <br /> 
                 <label htmlFor='activityName'>Activity Name: </label>
                 <input type="text" id='activityName' name='activityName' defaultValue={camForm.activityName} /> <br />
                 <label htmlFor="startTime">StartTime: </label>
