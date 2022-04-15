@@ -8,7 +8,22 @@ export function camReducer(state: CamState, action: Actions): CamState{
             return {
                 ...state,
                 cam: action.payload,
-            };            
+            };
+            //struggling to get update to work...seems that typescript doesn't like that there is a camForm coming in as the action and a camData being returned
+        // case 'updateCam':
+        //     const updatedCam = action.payload;
+        //     let actId = updatedCam.activityId;
+        //     const udpatedCamList: CamData[] = state.cam.data.map((cam: CamData) => {
+        //         if (cam.activityId === actId) return updatedCam
+        //         return cam
+        //     })
+        //     const updateCamState = {data: udpatedCamList}
+        //     return {
+        //         ...state,
+        //         cam: updateCamState
+        //         // employees: updatedEmployees,
+        //     };
+
         case "doubleCam":
             return{
                 ...state,
@@ -50,6 +65,7 @@ export type CamState = {
 }
 
 export type ActionsMap = {
+    // updateCam: CamForm;
     setCam: Cam;
     doubleCam: undefined;
     setCamForm: CamForm
