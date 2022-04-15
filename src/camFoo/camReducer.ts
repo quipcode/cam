@@ -45,6 +45,9 @@ export interface CamData {
     activityName: string
     startTime: string
     endTime: string
+    duration: string,
+    dayStart: string;
+    dayEnd: string;
 }
 export interface Cam{
     establishCam: () => void;
