@@ -109,10 +109,9 @@ function Chart({data} : any){
                 .on("click", function (event: any) {
                     // console.log(event)
                     let activity = event.target.__data__.data
-                    let startTime = activity["startTime"].toString()
-                    let endTime = activity["endTime"].toString()
+                    let startTime = parseInt(activity["startTime"].toString())
+                    let endTime = parseInt(activity["endTime"].toString())
                     let activityName = activity["activityName"].toString()
-                    
                     setCamForm({
                         startTime: startTime,
                         endTime: endTime,

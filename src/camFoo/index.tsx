@@ -4,7 +4,6 @@ import ReactDom from 'react-dom';
 // import { Foo } from './foo';
 // import { Bar } from './bar';
 import { CamProvider } from './camContext';
-import  Cam from './cam';
 import CamForm from './camForm';
 import Chart from './chart';
 
@@ -13,7 +12,6 @@ function CamFoo() {
 
         // <CamForm/>
         <CamProvider>
-            <Cam/>
             <CamForm/>
             <Chart />
         </CamProvider>

@@ -9,7 +9,7 @@ function millisecondsStringToHourMinute(milliString: number){
     let milliNum = parseInt(milliString)
     var date = new Date(milliNum);
     let options = {hourCycle: 'h23', hour: '2-digit', minute: '2-digit'}
-    return date.toLocaleString('en-US', {hourCycle: 'h23', hour: '2-digit', minute: '2-digit'});
+    return milliString ? date.toLocaleString('en-US', {hourCycle: 'h23', hour: '2-digit', minute: '2-digit'}) : ""; 
 }
     return (
         <div>
@@ -48,18 +48,18 @@ function millisecondsStringToHourMinute(milliString: number){
                 <label htmlFor='activityName'>Activity Name: </label>
                 <input type="text" id='activityName' name='activityName' defaultValue={camForm.activityName} /> <br />
                 <label htmlFor="startTime">StartTime: </label>
-                <input type="time" name='startTime' id='startTime' defaultValue={millisecondsStringToHourMinute(camForm.startTime)} /> <br />
+                <input type="time" name='startTime' id='startTime'  defaultValue={millisecondsStringToHourMinute(camForm.startTime)}    /> <br />
                 <label htmlFor="endTime" >EndTime: </label>
-                <input type="time" name='endTime' id='endTime' defaultValue={millisecondsStringToHourMinute(camForm.endTime)} /> <br />
+                <input type="time" name='endTime' id='endTime'  defaultValue={millisecondsStringToHourMinute(camForm.endTime)} /> <br />
 
                 <input type="submit" value="Submit" />
             </form>
-            <div>
+            {/* <div>
                 <p>startTime: {camForm.startTime}</p>
                 <p>endTime: {camForm.endTime}</p>
                 <p>activityName: {camForm.activityName}</p>
                 <p>StarttimeCorrected: {millisecondsStringToHourMinute(camForm.startTime)}</p>
-            </div>
+            </div> */}
         </div>
     )
 }
