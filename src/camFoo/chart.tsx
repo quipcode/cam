@@ -6,6 +6,7 @@ import { useCam } from './useCam'
 
 function Chart({data} : any){
     const { cam, camForm, setCam, doubleCam, setCamForm } = useCam();
+    console.log("inchart", cam)
     const ref = useD3(
 
         (svg : any) => {
@@ -118,15 +119,18 @@ function Chart({data} : any){
                         startTime: startTime,
                         endTime: endTime,
                         activityName: activityName,
-                        establishCamForm() {
-                            console.log("hi")
-                        }
+                        duration: 0,
+                        dayStart: 0,
+                        dayEnd: 0
+                        // establishCamForm() {
+                        //     console.log("hi")
+                        // }
                     })
                 })
 
         },
 
-        [cam.data.length]
+        [cam.data]
 
     );
 

@@ -3,26 +3,26 @@ export function camReducer(state: CamState, action: Actions): CamState{
      
         case 'setCam':
             // A `Foo` specific method not on Bar
-            action.payload.establishCam();
+            // action.payload.establishCam();
 
             return {
                 ...state,
                 cam: action.payload,
             };
             //struggling to get update to work...seems that typescript doesn't like that there is a camForm coming in as the action and a camData being returned
-        // case 'updateCam':
-        //     const updatedCam = action.payload;
-        //     let actId = updatedCam.activityId;
-        //     const udpatedCamList: CamData[] = state.cam.data.map((cam: CamData) => {
-        //         if (cam.activityId === actId) return updatedCam
-        //         return cam
-        //     })
-        //     const updateCamState = {data: udpatedCamList}
-        //     return {
-        //         ...state,
-        //         cam: updateCamState
-        //         // employees: updatedEmployees,
-        //     };
+        case 'updateCam':
+            const updatedCam = action.payload; //CamForm
+            let actId = updatedCam.activityId;
+            const udpatedCamList: CamData[] = state.cam.data.map((cam: CamData) => {
+                if (cam.activityId === actId) return updatedCam
+                return cam
+            })
+            const updateCamState = {data: udpatedCamList}
+            return {
+                ...state,
+                cam: updateCamState
+                // employees: updatedEmployees,
+            };
 
         case "doubleCam":
             return{
@@ -33,7 +33,7 @@ export function camReducer(state: CamState, action: Actions): CamState{
                 },
             }
         case "setCamForm":
-            action.payload.establishCamForm();
+            // action.payload.establishCamForm();
             return{
                 ...state,
                 camForm: action.payload,
@@ -43,19 +43,19 @@ export function camReducer(state: CamState, action: Actions): CamState{
 export interface CamData {
     activityId: number
     activityName: string
-    startTime: string
-    endTime: string
-    duration: string,
-    dayStart: string;
-    dayEnd: string;
+    startTime: number
+    endTime: number
+    duration: number,
+    dayStart: number;
+    dayEnd: number;
 }
 export interface Cam{
-    establishCam: () => void;
+    // establishCam: () => void;
     data : Array<CamData>
 }
 
 export interface CamForm{
-    establishCamForm: () => void;
+    // establishCamForm: () => void;
     activityId: number;
     activityName: string;
     startTime: number;
@@ -68,7 +68,7 @@ export type CamState = {
 }
 
 export type ActionsMap = {
-    // updateCam: CamForm;
+    updateCam: CamData;
     setCam: Cam;
     doubleCam: undefined;
     setCamForm: CamForm
